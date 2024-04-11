@@ -9,7 +9,8 @@ services:
     ports:
       - 8000:8000
     environment:
-      - DATABASE_URL=postgresql://fastapi_traefik:fastapi_traefik@db:5432/fastapi_traefik
+      - DATABASE_URL=postgresql+asyncpg://fastapi_traefik:fastapi_traefik@db:5432/fastapi_traefik
+      - SECRET_KEY=zxctyinmhjk1297jj34tfewqqegbnnbcfgt39ik20olmnjg
 
     depends_on:
       - db
