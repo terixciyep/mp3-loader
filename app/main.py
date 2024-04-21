@@ -1,6 +1,7 @@
 from contextlib import asynccontextmanager
 from typing import Union
 
+import aioredis
 from fastapi import FastAPI, Depends
 
 from app.app.db import create_db_and_tables, engine, Base
@@ -52,3 +53,16 @@ async def authenticated_route(user: User = Depends(current_active_user)):
 async def startup():
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
+
+async def get_redis():
+    redis = await create_redis('redis://localhost')
+    return redis
+
+@app.get("/")
+async def read_root():
+    redis = await get_redis()
+    await redis.set('ключ', 'значение')
+    value = await redis.get('ключ')
+    redis.close()
+    await redis.wait_closed()
+    return {"value": value}

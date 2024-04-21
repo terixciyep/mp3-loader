@@ -1,11 +1,13 @@
 import uuid
 from typing import Optional
 
+import aioredis
+import redis
 from fastapi import Depends, Request
 from fastapi_users import BaseUserManager, FastAPIUsers, UUIDIDMixin
 from fastapi_users.authentication import (
     AuthenticationBackend,
-    CookieTransport,
+    BearerTransport,
     RedisStrategy,
 )
 from fastapi_users_db_sqlalchemy import SQLAlchemyUserDatabase
@@ -40,10 +42,10 @@ async def get_user_manager(user_db: SQLAlchemyUserDatabase = Depends(get_user_db
 
 bearer_transport = BearerTransport(tokenUrl="auth/jwt/login")
 
+redis = redis.asyncio.Redis(host='redis', port=6379, decode_responses=True)
 
 def get_redis_strategy() -> RedisStrategy:
-    return RedisStrategy(lifetime_seconds=3600*24)
-
+    return RedisStrategy(redis,lifetime_seconds=3600*24)
 
 auth_backend = AuthenticationBackend(
     name="jwt",

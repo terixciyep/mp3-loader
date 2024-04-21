@@ -11,9 +11,12 @@ services:
     environment:
       - DATABASE_URL=postgresql+asyncpg://fastapi_traefik:fastapi_traefik@db:5432/fastapi_traefik
       - SECRET_KEY=zxctyinmhjk1297jj34tfewqqegbnnbcfgt39ik20olmnjg
-
+      - REDIS_HOST=cache
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD=eYVX7EwVmmxKPCDmwMtyKVge8oLd2t81
     depends_on:
       - db
+      - redis
 
   db:
     image: postgres:15-alpine
@@ -25,6 +28,20 @@ services:
       - POSTGRES_USER=fastapi_traefik
       - POSTGRES_PASSWORD=fastapi_traefik
       - POSTGRES_DB=fastapi_traefik
+
+
+  redis:
+    image: redis:latest
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - /path/to/local/dаta:/root/redis
+      - /path/to/local/redis.conf:/usr/local/etc/redis/redis.conf
+    environment:
+      - REDIS_PASSWORD=eYVX7EwVmmxKPCDmwMtyKVge8oLd2t81
+      - REDIS_PORT=6379
+      - REDIS_DATABASES=16
 
 volumes:
   postgres_data:
